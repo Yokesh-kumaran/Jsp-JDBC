@@ -10,23 +10,22 @@ import java.sql.SQLException;
 
 public class UserDao {
 
-    Connection connection;
+    private static final String LOGIN_QUERY ="SELECT id,username,password FROM auth WHERE username=? AND password=?" ;
+    private final Connection connection;
 
-    public UserDao() {
-        connection = DatabaseConnection.getConnection();
+    public UserDao(){
+        connection= DatabaseConnection.getConnection();
     }
 
-    private String selectSql = "SELECT id, username, password FROM auth WHERE username=? and password=?";
-
-    public User loginInUser(String username, String password) {
-        User user = null;
+    public User loginUser(String username, String password){
+        User user=null;
         try {
-            PreparedStatement statement = connection.prepareStatement(selectSql);
-            statement.setString(1, username);
-            statement.setString(2, password);
+            PreparedStatement statement=connection.prepareStatement(LOGIN_QUERY);
+            statement.setString(1,username);
+            statement.setString(2,password);
             ResultSet rs = statement.executeQuery();
             if(rs.next()){
-                user = new User();
+                user=new User();
                 user.setId(rs.getInt("id"));
                 user.setUsername(rs.getString("username"));
                 user.setPassword(rs.getString("password"));
@@ -34,7 +33,6 @@ public class UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         return user;
     }
 }

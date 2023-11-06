@@ -3,7 +3,8 @@ package com.jspexample.model;
 public class Todo {
     private int id;
     private int userId;
-    private String todo;
+    private String item;
+    private boolean d_flag=false;
 
     public int getId() {
         return id;
@@ -21,11 +22,19 @@ public class Todo {
         this.userId = userId;
     }
 
-    public String getTodo() {
-        return todo;
+    public String getItem() {
+        return item;
     }
 
-    public void setTodo(String todo) {
-        this.todo = todo;
+    public void setItem(String item) {
+        this.item = item;
+    }
+
+    public boolean isD_flag() {
+        return d_flag;
+    }
+
+    public void setD_flag(boolean d_flag) {
+        this.d_flag = d_flag;
     }
 }

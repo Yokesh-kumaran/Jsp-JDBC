@@ -12,53 +12,51 @@ import java.util.List;
 
 public class TodoDao {
 
-    private final String INSERT_TODO = "INSERT INTO todo (todo, userId) VALUES (?, ?);";
-    private final String SELECT_ALL = "SELECT id, todo, userId FROM todo WHERE userId=?";
-    private final String DELETE_TODO = "DELETE todo WHERE id=?;";
-
-    private final Connection connection;
-
-    public TodoDao() {
-        connection = DatabaseConnection.getConnection();
+    private  String INSERT_QUERY ="INSERT INTO todo (userId,item) VALUES (?,?);" ;
+    private  String SELECT_ALL_QUERY = "SELECT id,item FROM todo WHERE userId=? AND deleteflag=false;";
+    private  String DELETE_QUERY = "UPDATE todo SET deleteflag=true WHERE id=?;";
+    private Connection connection;
+    public TodoDao(){
+        connection= DatabaseConnection.getConnection();
     }
 
-    public void addTodo(String todo, int userId) {
+    public void addTodo(String item, int userId){
         try {
-            PreparedStatement ps = connection.prepareStatement(INSERT_TODO);
-            ps.setString(1, todo);
-            ps.setInt(2, userId);
-            ps.executeUpdate();
+            PreparedStatement statement=connection.prepareStatement(INSERT_QUERY);
+            statement.setString(2,item);
+            statement.setInt(1,userId);
+            statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    public List<Todo> selectAllTodos(int userId) {
-        List<Todo> todos = new ArrayList<Todo>();
+    public List<Todo> getAllValues(int userId){
+        List<Todo> todos = new ArrayList<>();
         try {
-            PreparedStatement ps = connection.prepareStatement(SELECT_ALL);
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+            PreparedStatement statement=connection.prepareStatement(SELECT_ALL_QUERY);
+            statement.setInt(1,userId);
+            ResultSet rs=statement.executeQuery();
+            while (rs.next()){
                 Todo todo = new Todo();
-                todo.setId(Integer.parseInt(rs.getString("id")));
-                todo.setTodo(rs.getString("todo"));
-                todo.setUserId(rs.getInt("userId"));
+                todo.setId(rs.getInt("id"));
+                todo.setItem(rs.getString("item"));
                 todos.add(todo);
             }
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return todos;
     }
 
-    public void deleteTodo(int id) {
+    public void deleteTodo(String id){
         try {
-            PreparedStatement ps = connection.prepareStatement(DELETE_TODO);
-            ps.setInt(1, id);
-            ps.executeUpdate();
+            PreparedStatement statement=connection.prepareStatement(DELETE_QUERY);
+            statement.setString(1,id);
+            statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }
